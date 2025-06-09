@@ -2,12 +2,14 @@ import express from 'express';
 import config from './config/config';
 import db from './db/sqlite.db';
 import { api } from './routers';
+import { errorMiddleware } from './middlewares/error.middleware';
 
 const port = config.app.port
 const app = express()
 
 app.use(express.json())
 app.use('/api', api)
+app.use(errorMiddleware)
 
 app.listen(port, async() => {
   await db.authenticate();
