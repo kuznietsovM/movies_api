@@ -1,0 +1,28 @@
+# Logs
+logs
+*.log
+
+# Data storage directories
+data/
+
+# Compiled js
+dist/
+
+# Dependency directories
+node_modules/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# dotenv environment variables file
+.env
+.env.test
+
+# GH Actions
+.github/*
