@@ -1,13 +1,13 @@
 import { User } from "../models";
 import { CreateUser } from "../schemas/create-user.schema";
 import bcrypt from "bcrypt"
-import { ConflictError, NotFoundError } from "../utils/errors";
+import { EmailNotUniqueError } from "../utils/errors";
 
 class UserService {
   async create (data: CreateUser) {
     const user = await this.getByEmail(data.email)
     if(user)
-      throw new ConflictError()
+      throw new EmailNotUniqueError('email', data.email)
 
     const passwordHash = await bcrypt.hash(data.password, 10)
     return await User.create({...data, passwordHash})

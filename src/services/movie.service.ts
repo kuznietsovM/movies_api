@@ -4,13 +4,18 @@ import { Actor, Movie } from "../models";
 import { CreateMovie } from "../schemas/create-movie.schema";
 import { FindMovieParams } from "../schemas/find-movie-params.schema";
 import { UpdateMovie } from "../schemas/update-movie.schema";
-import { NotFoundError } from "../utils/errors";
 import actorService from "./actor.service";
 import { Op } from "sequelize";
+import { MovieExistsError, MovieNotFoundError } from "../utils/errors";
 
 class MovieService {
 
   async create (data: CreateMovie) {
+
+    const movie = await this.getByTitle(data.title)
+    if(movie)
+      throw new MovieExistsError('title', data.title)
+
     const include : Includeable[] = []
 
     if(data.actors){
@@ -24,16 +29,16 @@ class MovieService {
     return await Movie.create(transformedData, { include })
   }
 
-  async delete (id: string) {
+  async delete (id: number) {
     const deletedNumber = await Movie.destroy({
       where: { id }
     })
 
     if(deletedNumber < 1)
-      throw new NotFoundError(`No movie with id ${id}`)
+      throw new MovieNotFoundError(id)
   }
 
-  async get (id: string) {
+  async get (id: number) {
     const movie = await Movie.findByPk(id, {
       include: [{ 
         model: Actor, 
@@ -44,12 +49,12 @@ class MovieService {
     })
 
     if(!movie)
-      throw new NotFoundError(`No movie with id ${id}`)
+      throw new MovieNotFoundError(id)
 
     return movie
   }
 
-  async update (id: string, data: UpdateMovie) {
+  async update (id: number, data: UpdateMovie) {
     const { actors: actorNames, ...movieData } = data
 
     const transaction = await db.transaction()
@@ -57,7 +62,7 @@ class MovieService {
     try {
       const movie = await Movie.findByPk(id, {transaction})
       if(!movie)
-        throw new NotFoundError(`No movie with id ${id}`)
+        throw new MovieNotFoundError(id)
 
       await Movie.update(movieData, {
         where: { id },
@@ -135,6 +140,14 @@ class MovieService {
 
     return result
   }
+
+  private async getByTitle (title: string) {
+    return await Movie.findOne({
+      where: {
+        title
+      }
+    })
+  } 
 }
 
 export default new MovieService();

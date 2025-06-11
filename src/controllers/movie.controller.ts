@@ -18,7 +18,7 @@ class MovieController {
   }
 
   async delete(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params
+    const id = parseInt(req.params.id)
 
     try{
       await movieService.delete(id)
@@ -29,7 +29,7 @@ class MovieController {
   }
 
   async get(req: Request, res: Response, next: NextFunction) {
-    const { id } = req.params
+    const id = parseInt(req.params.id)
 
     try{
       const movie = await movieService.get(id)
@@ -41,7 +41,7 @@ class MovieController {
 
   async update(req: Request<{ id: string }, {}, UpdateMovie>, res: Response, next: NextFunction) {
     const updateData = req.body
-    const { id } = req.params
+    const id = parseInt(req.params.id)
 
     try {
       const movie = await movieService.update(id, updateData)

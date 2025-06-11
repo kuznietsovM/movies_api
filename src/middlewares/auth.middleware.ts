@@ -1,16 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import { AuthenticationError } from "../utils/errors";
 import authService from "../services/auth.service";
+import { FormatError } from "../utils/errors";
 
 export function auth (req: Request, res: Response, next: NextFunction) {
   const token = req.header('Authorization')
   if(!token)
-    throw new AuthenticationError('No token provided.')
+    throw new FormatError('token')
 
   try{
     authService.verifyToken(token)
   } catch (e) {
-    throw new AuthenticationError('Invalid token provided.')
+    throw new FormatError('token')
   }
 
   next()
