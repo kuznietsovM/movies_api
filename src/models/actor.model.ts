@@ -1,14 +1,14 @@
 import { CreationOptional, DataTypes, InferAttributes, InferCreationAttributes, Model } from "sequelize";
 import db from "../db/sqlite.db";
 
-class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+class Actor extends Model<InferAttributes<Actor>, InferCreationAttributes<Actor>> {
   declare id: CreationOptional<number>
   declare name: string
-  declare email: string
-  declare password: string
-}
+  declare createdAt: CreationOptional<Date>;
+  declare updatedAt: CreationOptional<Date>;
+} 
 
-User.init(
+Actor.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -18,19 +18,19 @@ User.init(
     name: {
       type: DataTypes.STRING,
     },
-    email: {
-      type: DataTypes.STRING,
-      unique: true
-    },
-    password: {
-      type: DataTypes.STRING,
-    }
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE,
   },
   {
     sequelize: db,
-    timestamps: false,
-    modelName: 'user'
-  }
+    timestamps: true,
+    modelName: 'actor',
+    indexes: [
+      {
+        fields: ['name']
+      }
+    ]
+  } 
 )
 
-export default User;
+export default Actor

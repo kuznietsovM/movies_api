@@ -7,5 +7,6 @@ export function errorMiddleware(err: any, req: Request, res: Response, next: Nex
         return
     }
 
+    console.error(err);
     res.status(500).json({status: 0, message: "Internal server error"})
 }
