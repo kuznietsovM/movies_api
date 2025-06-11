@@ -4,7 +4,7 @@ import db from './db/sqlite.db';
 import { api } from './routers';
 import { errorMiddleware } from './middlewares/error.middleware';
 
-const port = config.app.port
+const { port } = config
 const app = express()
 
 app.use(express.json())

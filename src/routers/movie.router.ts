@@ -5,8 +5,11 @@ import movieController from "../controllers/movie.controller";
 import { IdParamSchema } from "../schemas/movie-param.schema";
 import { UpdateMovieSchema } from "../schemas/update-movie.schema";
 import { FindMovieParamsSchema } from "../schemas/find-movie-params.schema";
+import { auth } from "../middlewares/auth.middleware";
 
 const router = Router();
+
+router.use(auth)
 
 router.post('/', 
   validate(CreateMovieSchema, 'body'),

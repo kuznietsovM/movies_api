@@ -66,6 +66,15 @@ class NotFoundError extends HttpError {
 }
 
 /**
+ * ConflictError occures on unique resource is already created
+ */
+class ConflictError extends HttpError {
+    constructor(message?: string) {
+        super(409, "Conflict " + (message ? `: ${message}` : ""))
+    }
+}
+
+/**
  * InternalError occures when other service/app returned BadRequest.
  */
 class InternalError extends HttpError {
@@ -81,5 +90,6 @@ export {
     AuthenticationError,
     ForbiddenError,
     NotFoundError,
+    ConflictError,
     InternalError,
 }
