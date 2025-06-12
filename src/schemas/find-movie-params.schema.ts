@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const FindMovieParamsSchema = z.object({
-  actor: z.string().optional(),
-  title: z.string().optional(),
-  search: z.string().optional(),
+  actor: z.string().max(64).optional(),
+  title: z.string().max(128).optional(),
+  search: z.string().max(128).optional(),
   sort: z.enum(['id', 'title' , 'year']).default('id'),
   order: z.enum(['ASC', 'DESC']).default('ASC'),
   limit: z.preprocess((val) => {
