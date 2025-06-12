@@ -6,10 +6,16 @@ import { IdParamSchema } from "../schemas/movie-param.schema";
 import { UpdateMovieSchema } from "../schemas/update-movie.schema";
 import { FindMovieParamsSchema } from "../schemas/find-movie-params.schema";
 import { auth } from "../middlewares/auth.middleware";
+import { upload } from "../utils/upload";
 
 const router = Router();
 
 router.use(auth)
+
+router.post('/import', 
+  upload.single('movies'),
+  movieController.import
+)
 
 router.post('/', 
   validate(CreateMovieSchema, 'body'),

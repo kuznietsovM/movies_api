@@ -11,7 +11,7 @@ export const FindMovieParamsSchema = z.object({
       return Number.parseInt(val);
     }
     return val;
-  }, z.number().int().max(50).min(1).default(10)),
+  }, z.number().int().max(50).min(1).default(20)),
   offset: z.preprocess((val) => {
     if (typeof val === "string") {
       return Number.parseInt(val);

@@ -5,7 +5,7 @@ export const CreateMovieSchema = z.object({
   title: z.string(),
   year: z.number(),
   format: z.nativeEnum(MovieFormat),
-  actors: z.array(z.string()).optional()
+  actors: z.array(z.string())
 })
 
 export type CreateMovie = z.infer<typeof CreateMovieSchema>

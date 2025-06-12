@@ -3,6 +3,8 @@ import { CreateMovie } from "../schemas/create-movie.schema";
 import movieService from "../services/movie.service";
 import { UpdateMovie } from "../schemas/update-movie.schema";
 import { FindMovieParamsSchema } from "../schemas/find-movie-params.schema";
+import { FormatError } from "../utils/errors";
+import { MovieFormat } from "../models/movie.model";
 
 class MovieController {
   async create (req: Request<{}, {}, CreateMovie>, res: Response, next: NextFunction) {
@@ -62,6 +64,32 @@ class MovieController {
         meta: {
           total: result.count
         }, 
+        status: 1
+      })
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  async import(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.file) {
+        throw new FormatError('file');
+      }
+      const data = req.file.buffer.toString('utf-8')
+      if(!data) {
+        throw new FormatError('movie')
+      }
+      
+      const createMoviesData : CreateMovie[] = movieService.parseFromString(data)
+      const movies = await movieService.createMany(createMoviesData)
+
+      res.status(200).json({
+        data: movies,
+        meta: {
+          total: createMoviesData.length,
+          imported: movies.length
+        },
         status: 1
       })
     } catch (e) {

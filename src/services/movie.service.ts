@@ -1,4 +1,4 @@
-import { Includeable, WhereOptions } from "sequelize";
+import { Includeable, InferCreationAttributes, WhereOptions } from "sequelize";
 import db from "../db/sqlite.db";
 import { Actor, Movie } from "../models";
 import { CreateMovie } from "../schemas/create-movie.schema";
@@ -7,6 +7,7 @@ import { UpdateMovie } from "../schemas/update-movie.schema";
 import actorService from "./actor.service";
 import { Op } from "sequelize";
 import { MovieExistsError, MovieNotFoundError } from "../utils/errors";
+import { MovieFormat } from "../models/movie.model";
 
 class MovieService {
 
@@ -18,15 +19,35 @@ class MovieService {
 
     const include : Includeable[] = []
 
-    if(data.actors){
+    if(data.actors && data.actors.length > 0){
       include.push({model: Actor})
     }
     const transformedData = {
       ...data,
-      actors: data.actors ? data.actors.map(actor => ({name: actor})) : undefined
+      actors: data.actors.map(actor => ({name: actor}))
     }
 
     return await Movie.create(transformedData, { include })
+  }
+
+  async createMany(data: CreateMovie[]) {
+    const creationData = []
+    const movieTitles: string[] = data.map(movie => movie.title)
+
+    const existedMovieTitles = (await this.findByTitles(movieTitles)).map(movie => movie.title);
+
+    for (const movie of data) {
+      if(!existedMovieTitles.includes(movie.title)){
+        creationData.push({
+          ...movie,
+          actors: movie.actors.map(actor => ({name: actor}))
+        })
+      }
+    } 
+    
+    return await Movie.bulkCreate(creationData, {
+      include: { model: Actor }
+    })
   }
 
   async delete (id: number) {
@@ -147,7 +168,51 @@ class MovieService {
         title
       }
     })
-  } 
+  }
+  
+  private async findByTitles (titles: string[]) {
+    return await Movie.findAll({
+      where: {
+        title: {
+          [Op.in]: titles
+        }
+      }
+    })
+  }
+
+  parseFromString (data: string) : CreateMovie[] {
+    const movieBlocks = data.trim().split(/\n\s*\n/);
+    const createMoviesData : CreateMovie[] = movieBlocks.map(block => {
+      const lines = block.split('\n');
+      const createMovieData : CreateMovie  = {
+        title: '',
+        year: 0,
+        format: '' as MovieFormat,
+        actors: [],
+      }
+
+      lines.forEach(line => {
+        const [key, value] = line.split(':').map(part => part.trim());
+        switch (key) {
+          case 'Title':
+            createMovieData.title = value;
+            break;
+          case 'Release Year':
+            createMovieData.year = parseInt(value, 10);
+            break;
+          case 'Format':
+            createMovieData.format = value as MovieFormat;
+            break;
+          case 'Stars':
+            createMovieData.actors = value.split(',').map(star => star.trim());
+            break;
+        }
+      })
+      return createMovieData
+    })
+
+    return createMoviesData
+  }
 }
 
 export default new MovieService();
