@@ -4,7 +4,6 @@ import movieService from "../services/movie.service";
 import { UpdateMovie } from "../schemas/update-movie.schema";
 import { FindMovieParamsSchema } from "../schemas/find-movie-params.schema";
 import { FormatError } from "../utils/errors";
-import { MovieFormat } from "../models/movie.model";
 
 class MovieController {
   async create (req: Request<{}, {}, CreateMovie>, res: Response, next: NextFunction) {

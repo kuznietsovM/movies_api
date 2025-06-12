@@ -6,4 +6,4 @@ RUN yarn
 
 COPY src src
 
-ENTRYPOINT yarn watch
+ENTRYPOINT yarn start

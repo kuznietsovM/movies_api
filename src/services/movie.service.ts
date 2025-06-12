@@ -1,4 +1,4 @@
-import { Includeable, InferCreationAttributes, WhereOptions } from "sequelize";
+import { Includeable, WhereOptions } from "sequelize";
 import db from "../db/sqlite.db";
 import { Actor, Movie } from "../models";
 import { CreateMovie } from "../schemas/create-movie.schema";

@@ -16,7 +16,7 @@ app.listen(port, async() => {
   await db.authenticate();
   console.log('Connection to the DB has been established successfully.');
   
-  await db.sync({force: true});
+  await db.sync();
   console.log('All models were synced.');
   
   console.log(`App started on port: ${port}`);
