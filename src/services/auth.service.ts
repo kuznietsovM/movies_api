@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from "bcrypt"
 import config from '../config/config';
 
-const secret = 'secret';
+const secret = config.jwtSecret;
 
 class AuthService {
   generateToken (userId: string) {
