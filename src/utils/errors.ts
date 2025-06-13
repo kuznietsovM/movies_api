@@ -3,11 +3,11 @@ import { ZodError } from "zod";
 type Fields = Record<string, string | number | boolean | string[]>
 
 interface ErrorResponse {
-  status: 0; 
+  status: 0;
+  message: string
   error: {
     fields?: Fields;
     code: string;
-    reasons?: string[]
   };
 }
 
@@ -31,6 +31,7 @@ export class ApiError extends Error {
   toResponse(): ErrorResponse {
     return {
       status: 0,
+      message: this.message,
       error: {
         ...(this.fields && Object.keys(this.fields).length > 0 && { fields: this.fields }),
         code: this.errorCode,
@@ -86,6 +87,27 @@ export class FormatError extends ApiError {
       `Field '${field}' has an invalid format or is missing.`,
       { [field]: 'REQUIRED' }
     );
+  }
+}
+
+export class EmptyFileError extends ApiError {
+  constructor() {
+    super(
+      400,
+      'EMPTY_FILE_ERROR',
+      `Empty file provided.`
+    )
+  }
+}
+
+export class FileFormatError extends ApiError {
+  constructor(format: string) {
+    super(
+      400,
+      'FILE_FORMAT_ERROR',
+      `Unsupported file format`,
+      { format }
+    )
   }
 }
 

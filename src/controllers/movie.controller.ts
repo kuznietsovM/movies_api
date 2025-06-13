@@ -3,7 +3,7 @@ import { CreateMovie } from "../schemas/create-movie.schema";
 import movieService from "../services/movie.service";
 import { UpdateMovie } from "../schemas/update-movie.schema";
 import { FindMovieParamsSchema } from "../schemas/find-movie-params.schema";
-import { FormatError } from "../utils/errors";
+import { EmptyFileError, FormatError } from "../utils/errors";
 
 class MovieController {
   async create (req: Request<{}, {}, CreateMovie>, res: Response, next: NextFunction) {
@@ -75,9 +75,9 @@ class MovieController {
       if (!req.file) {
         throw new FormatError('file');
       }
-      const data = req.file.buffer.toString('utf-8')
+      const data = req.file.buffer.toString('utf-8').trim()
       if(!data) {
-        throw new FormatError('movie')
+        throw new EmptyFileError()
       }
       
       const createMoviesData : CreateMovie[] = movieService.parseFromString(data)
