@@ -1,4 +1,4 @@
-import { Includeable, WhereOptions } from "sequelize";
+import { Includeable, Order, WhereOptions } from "sequelize";
 import db from "../db/sqlite.db";
 import { Actor, Movie } from "../models";
 import { CreateMovie } from "../schemas/create-movie.schema";
@@ -108,6 +108,12 @@ class MovieService {
 
     let where: WhereOptions<Movie> = {}
     let include: Includeable[] = []
+    let order: Order = []
+
+    if(params.sort == 'title')
+      order = [[db.fn('LOWER', db.col(params.sort)), params.order]]
+    else
+      order = [[params.sort, params.order]]
 
     if(params.title){
       where = {
@@ -153,7 +159,7 @@ class MovieService {
 
     const result = await Movie.findAndCountAll({
       where,
-      order: [[params.sort, params.order]],
+      order,
       limit: params.limit,
       offset: params.offset,
       include: include
